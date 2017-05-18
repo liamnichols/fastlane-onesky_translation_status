@@ -1,0 +1,3 @@
+lane :test do
+  onesky_translation_status
+end
