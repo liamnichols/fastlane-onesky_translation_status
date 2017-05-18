@@ -1,4 +1,5 @@
 # coding: utf-8
+
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'fastlane/plugin/onesky_translation_status/version'
@@ -6,10 +7,10 @@ require 'fastlane/plugin/onesky_translation_status/version'
 Gem::Specification.new do |spec|
   spec.name          = 'fastlane-plugin-onesky_translation_status'
   spec.version       = Fastlane::OneskyTranslationStatus::VERSION
-  spec.author        = %q{Liam Nichols}
-  spec.email         = %q{liam-nichols@cookpad.jp}
+  spec.author        = 'Liam Nichols'
+  spec.email         = 'liam-nichols@cookpad.jp'
 
-  spec.summary       = %q{Obtains the translation status for a specific locale in a Onesky project}
+  spec.summary       = 'Obtains the translation status for a specific locale in a Onesky project'
   # spec.homepage      = "https://github.com/<GITHUB_USERNAME>/fastlane-plugin-onesky_translation_status"
   spec.license       = "MIT"
 

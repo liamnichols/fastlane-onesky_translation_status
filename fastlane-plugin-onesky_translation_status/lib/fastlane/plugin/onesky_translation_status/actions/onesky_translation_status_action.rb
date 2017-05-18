@@ -78,7 +78,7 @@ module Fastlane
                                        optional: false,
                                        verify_block: proc do |value|
                                          raise "No filename given. Please specify the filename of the file you want to download the translations for using `filename: 'filename'`".red unless value and !value.empty?
-                                       end),
+                                       end)
         ]
       end
 
