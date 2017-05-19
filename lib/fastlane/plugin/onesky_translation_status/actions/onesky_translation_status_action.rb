@@ -9,16 +9,22 @@ module Fastlane
         client = Onesky::Client.new(params[:public_key], params[:secret_key])
         project = client.project(params[:project_id])
 
-        # Parse the response and get the raw progress value
-        response = project.get_translation_status({
-          file_name: params[:filename],
-          locale: params[:locale]
-        })
-        result = JSON.parse(response)
-        progress = result["data"]["progress"]
+        # Loop each locale provided
+        results = { }
+        params[:locales].each { |locale|
+          UI.message "Getting status of '#{locale}' translations in '#{params[:project_id]}'"
 
-        # Return the progress as a float between 0 and 1
-        progress.to_f / 100.0
+          # Parse the response and get the raw data
+          result = JSON.parse(project.get_translation_status({file_name: params[:filename], locale: locale}))
+          data = result["data"]
+          data["progress_value"] = data["progress"].to_f / 100.0
+
+          # Add the data to the results
+          results[locale] = data
+        }
+
+        # Return the results
+        results
       end
 
       def self.description
@@ -30,11 +36,10 @@ module Fastlane
       end
 
       def self.return_value
-        "The progress of translations for the specified locale (percentage between 0 and 1)"
+        "A dictionary of locales based on the provided values and their statuses"
       end
 
       def self.details
-        # Optional:
         "Obtains the translation status for a specific locale in a Onesky project"
       end
 
@@ -44,41 +49,26 @@ module Fastlane
                                        env_name: 'ONESKY_PUBLIC_KEY',
                                        description: 'Public key for OneSky',
                                        is_string: true,
-                                       optional: false,
-                                       verify_block: proc do |value|
-                                         raise "No Public Key for OneSky given, pass using `public_key: 'token'`".red unless value and !value.empty?
-                                       end),
+                                       optional: false),
           FastlaneCore::ConfigItem.new(key: :secret_key,
                                        env_name: 'ONESKY_SECRET_KEY',
                                        description: 'Secret Key for OneSky',
                                        is_string: true,
-                                       optional: false,
-                                       verify_block: proc do |value|
-                                         raise "No Secret Key for OneSky given, pass using `secret_key: 'token'`".red unless value and !value.empty?
-                                       end),
+                                       optional: false),
           FastlaneCore::ConfigItem.new(key: :project_id,
                                        env_name: 'ONESKY_PROJECT_ID',
                                        description: 'Project Id to upload file to',
-                                       optional: false,
-                                       verify_block: proc do |value|
-                                         raise "No project id given, pass using `project_id: 'id'`".red unless value and !value.empty?
-                                       end),
-          FastlaneCore::ConfigItem.new(key: :locale,
-                                       env_name: 'ONESKY_DOWNLOAD_LOCALE',
+                                       optional: false),
+          FastlaneCore::ConfigItem.new(key: :locales,
+                                       env_name: 'ONESKY_STATUS_LOCALES',
                                        description: 'Locale to download the translation for',
-                                       is_string: true,
-                                       optional: false,
-                                       verify_block: proc do |value|
-                                         raise 'No locale for translation given'.red unless value and !value.empty?
-                                       end),
+                                       type: Array,
+                                       optional: false),
           FastlaneCore::ConfigItem.new(key: :filename,
-                                       env_name: 'ONESKY_DOWNLOAD_FILENAME',
+                                       env_name: 'ONESKY_STATUS_FILENAME',
                                        description: 'Name of the file to download the localization for',
                                        is_string: true,
-                                       optional: false,
-                                       verify_block: proc do |value|
-                                         raise "No filename given. Please specify the filename of the file you want to download the translations for using `filename: 'filename'`".red unless value and !value.empty?
-                                       end)
+                                       optional: false)
         ]
       end
 
