@@ -6,7 +6,7 @@ module Fastlane
         require 'onesky'
 
         # Confgure the onesky plugin
-        client = Onesky::Client.new(params[:public_key], params[:secret_key])
+        client = ::Onesky::Client.new(params[:public_key], params[:secret_key])
         project = client.project(params[:project_id])
 
         # Loop each locale provided
